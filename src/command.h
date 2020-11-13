@@ -1,40 +1,33 @@
+#ifndef COMMAND_H
+#define COMMAND_H
+
 //================================
 // INCLUDES
 //================================
-#ifndef STDIO_H
-	#define STDIO_H
-	#include <stdio.h>
-#endif
 
-#ifndef STDLIB_H
-	#define STDLIB_H
-	#include <stdlib.h>
-#endif
-
-#ifndef UNISTD_H
-	#define UNISTD_H
-	#include <unistd.h>
-#endif
-
-#ifndef LIMITS_H
-	#define LIMITS_H
-	#include <limits.h>
-#endif
-
-#ifndef SYS_WAIT_H
-	#define SYS_WAIT_H
-	#include <sys/wait.h>
-#endif
-
-#ifndef ERRNO_H
-#define ERRNO_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <limits.h>
+#include <sys/wait.h>
 #include <errno.h>
-#endif
+#include <string.h>
 
-#ifndef STRING_H
-	#define STRING_H
-	#include <string.h>
-#endif
+#include "config.h"
+#include "utils.h"
+
+
+//================================
+// EXTERNAL VARIABLES
+//================================
+
+extern char ** tokens;
+extern char * cwd;
+extern int procs[PROCSNUM];
+extern char** job_names;
+extern int errno;
+extern char** environ;
+
 
 //================================
 // PROTÓTIPOS
@@ -52,3 +45,5 @@ int last_proc(); // Retorna posição do processo da lista
 int fore_cycle(int pid); // Fica esperando o filho
 void sig_child(int); // Passar SIGINT ao filho
 void stop_child(int); // Passar filho pro background
+
+#endif	// COMMAND_H

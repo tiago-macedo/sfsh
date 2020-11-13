@@ -1,4 +1,4 @@
-#include "command_funcs.h"
+#include "command.h"
 
 /**
  * @brief	Comando builtin para mudar de diretório

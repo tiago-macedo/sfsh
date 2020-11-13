@@ -1,42 +1,5 @@
-#include "segfaultshell.h"
-#include "command_funcs.c"
+#include "utils.h"
 
-//================================
-// MAIN
-//================================
-int main(int argc, char* argv[], char* envp[]) {
-	atexit(cleanup);
-	tokens = calloc(TOKENSNUM, sizeof(char*));
-	if (!tokens) {
-		perror("Variável tokens:");
-		return errno;
-	}
-	job_names = calloc(PROCSNUM, sizeof(char*));
-	for (int i=0; i<PROCSNUM; i++) procs[i] = 0;
-	chdir(getenv("HOME"));
-	cwd = malloc(sizeof(char) * FULLCMNDSIZE);
-	cwd[0] = '\0';
-	getcwd(cwd, sizeof(char) * FULLCMNDSIZE);
-	while(1) {
-		printf("sfsh @ %s> ", cwd); // Escreve o prompt
-		get_command();
-		if (!strcmp(tokens[0], "\n")) continue;
-		// COMANDOS BUILTINS
-		if (!strcmp(tokens[0], "quit")) break;
-		else if (!strcmp(tokens[0], "del")) del_proc(atoi(tokens[1]));
-		else if (!strcmp(tokens[0], "fg")) sh_fore();
-		else if (!strcmp(tokens[0], "bg")) sh_back();
-		else if (!strcmp(tokens[0], "jobs")) sh_jobs();
-		else if (!strcmp(tokens[0], "cd")) sh_cd();
-		else if (!strcmp(tokens[0], "kill")) sh_kill();
-		else sh_run();
-	}
-	return 0;
-}
-
-//================================
-// FUNÇÕES
-//================================
 
 /**
  * @brief		Lê e interpreta entrada do usuário.
@@ -162,4 +125,27 @@ void no_nulls() {
 			job_names[j-1] = NULL;
 		}
 	}
+}
+
+
+/**
+ * @brief			Shows an error message
+ *
+ * @details			The macro "OHNO" is expanded into
+ *					"ohno(__FILE__, __func__, __LINE__)".
+ * 
+ * @param file		File where error occurred
+ * @param function	Function where error occurred
+ * @param line		Number of line which called the function
+ */
+void ohno(char* file, char* function, int line) {
+	printf(
+		"Error!\n"
+		"File: %s\n"
+		"Function: %s\n"
+		"Line: %d\n"
+		"errno: %d\n",
+		file, function, line, errno);
+	perror("");
+	exit(errno);
 }

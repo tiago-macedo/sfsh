@@ -14,7 +14,9 @@
 
 ## Known Bugs
 
-## Sure Would Be Nice To Have This
+## Sure Would Be Nice To Have Thess
+- [ ] History of commands
+	- [ ] Pressing "up" goies throught history
 - [ ] Error handling
 
 ## Eyecandy
