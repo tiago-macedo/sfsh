@@ -16,7 +16,7 @@ void sh_cd() {
 			Para isso, vamos usar strtok() para dividir o
 			atual cwd em pedaços e colocá-los em temp_path.
 		*/
-		char * temp_path = malloc(CMNDSIZE * sizeof(char));
+		char * temp_path = smalloc(CMNDSIZE * sizeof(char), WHERE);
 		temp_path[0] = '\0';
 		strcat(temp_path, "/");
 		char * token = strtok(cwd, "/");
@@ -31,11 +31,13 @@ void sh_cd() {
 			perror("Erro subindo p diretório:");
 			exit(errno);
 		}
-		getcwd(cwd, sizeof(char) * FULLCMNDSIZE);
+		free(cwd);
+		cwd = getcwd(NULL, 0);
 	}
 	else if (tokens[1][0] == '/') {
 		if(chdir(tokens[1]) != 0) perror("Falha ao mudar de diretório:");
-		getcwd(cwd, sizeof(char) * FULLCMNDSIZE);
+		free(cwd);
+		cwd = getcwd(NULL, 0);
 	}
 }
 
@@ -88,7 +90,6 @@ void sh_run() {
  * @details	Retorna 1 se o processo terminou, 0 se só está parado.
  *
  * @par pid	PID do processo que deve estar no foreground
- *
  */
 int fore_cycle(int pid) {
 	if (!has_proc(pid)) return -2;
@@ -142,7 +143,7 @@ void stop_child(int sig) {
  * @brief	Executa programa em background
  * 
  */
-void sh_fore() {
+void sh_fg() {
 	int pid = 0;
 	if (tokens[1]) pid = atoi(tokens[1]);
 	else pid = procs[last_proc()];
@@ -154,27 +155,11 @@ void sh_fore() {
  * @brief	Executa programa em background
  * 
  */
-void sh_back() {
+void sh_bg() {
 	printf("Para colocar um programa em background, basta pressionar ctrl+Z enquanto ele está sendo executado.\n");
 }
 
 void sh_kill() {
 	kill(atoi(tokens[1]), SIGKILL);
 	del_proc(atoi(tokens[1]));
-}
-
-int last_token() {
-	int i=0;
-	while(tokens[i] != NULL){
-        i++;
-    }
-	return i-1;
-}
-
-int last_proc() {
-	int i=0;
-	while(procs[i] != 0){
-        i++;
-    }
-	return i-1;
 }

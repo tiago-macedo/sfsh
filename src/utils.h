@@ -16,11 +16,16 @@
 
 #include "config.h"
 
+
 //================================
 // MACROS
 //================================
 
-#define OHNO ohno(__FILE__, __func__, __LINE__)
+#define WHERE __FILE__, (char*) __func__, __LINE__
+#define OHNO ohno(WHERE)
+#define PANIC panic(WHERE)
+// #define malloc(s) smalloc(s, WHERE)	// Can't figure out why this fails
+// #define calloc(n, s) scalloc((size_t) n, s, WHERE)	// Or this
 
 
 //================================
@@ -36,15 +41,23 @@ extern char** environ;
 
 
 //================================
-// FUNCTIONS
+// PROTOTYPES
 //================================
 
-void get_command();
-void cleanup();
-void add_proc(int, char*);
-void del_proc(int);
-int has_proc(int pid);
-void no_nulls();
-void ohno(char*, char*, int);
+void get_command();		// Lê comando do usuário
+void cleanup();			// Limpa memória dinamicamente alocada
+void add_proc(int, char*);	// Adiciona processo da lista de processos
+void del_proc(int);		// Deleta processo da lista de processos
+int has_proc(int);		// Checa se pid corresponde a um processo na lista
+void no_nulls();		// Tira buracos da lista de processos
+int last_token(); // Retorna posição do ultimo token
+int last_proc(); // Retorna posição do processo da lista
+
+void* smalloc(size_t, char*, char*, int);	/* Wrapper for malloc with error
+											   handling */
+void* scalloc(size_t, size_t, char*, char*, int);	/* Wrapper for calloc with
+													   error handling */
+void ohno(char*, char*, int);	// Shows an error message
+void panic(char*, char*, int);	// Shows an error message and exits
 
 #endif	// UTILS_H
