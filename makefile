@@ -1,17 +1,17 @@
 CC = gcc
-FLAGS = -std=gnu99
-DEBUG_FLAGS = -Wall -pedantic -g
+GENRL_FLAGS = -std=gnu17
+DEBUG_FLAGS = -D_FORTIFY_SOURCE=1 -Wall -pedantic -g
+PRODU_FLAGS = -D_FORTIFY_SOURCE=2
 
-SRC =	src/main.c src/main.h src/utils.c src/utils.h src/command.c \
-		src/command.h
+SRC =	src/main.c src/utils.c  src/command.c
 
 all: sfsh
 
 sfsh: $(SRC)
-	$(CC) $(SRC) $(FLAGS) -o sfsh
+	$(CC) $(SRC) $(GENRL_FLAGS) $(PRODU_FLAGS) -o sfsh
 
 debug: $(SRC)
-	$(CC) $(SRC) $(FLAGS) $(DEBUG_FLAGS) -o sfsh
+	$(CC) $(SRC) $(GENRL_FLAGS) $(DEBUG_FLAGS) -o sfsh
 
 .PHONY: clean
 
