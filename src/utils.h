@@ -32,8 +32,8 @@
 // EXTERNAL VARIABLES
 //================================
 
-extern char ** tokens;
-extern char * cwd;
+extern char** tokens;
+extern char* cwd;
 extern int procs[PROCSNUM];
 extern char** job_names;
 extern int errno;

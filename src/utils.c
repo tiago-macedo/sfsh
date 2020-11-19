@@ -2,32 +2,32 @@
 
 
 /**
- * @brief		Lê e interpreta entrada do usuário.
+ * @brief		Reads and tokenizes the user's input.
  * 
- * @details		Caso não haja entrada do usuário, esta função não faz nada.
- *				Caso haja entrada, esta função separa a entrada do usuário,
- *				usando espaços como divisores, e coloca os pedaços no array
- *				global tokens. O token seguinte ao último deve ficar nulo.
+ * @details		On empty input, this does nothing.
+ *			Otherwise, this function tokenizes the input, using
+ *			whitsepace as the delimiter, and copies the tokens to
+ *			the global 'tokens' array. The token after the last
+ *			non-empty token is nulled.
  */
 void get_command() {
-	// Vamos ler a entrada do usuário.
 	char* input = smalloc(sizeof(char) * FULLCMNDSIZE, WHERE);
-    char* token = smalloc(sizeof(char) * CMNDSIZE, WHERE);
+    	char* token = smalloc(sizeof(char) * CMNDSIZE, WHERE);
 	size_t cmndsize = FULLCMNDSIZE;
 	if (	getline(&input, &cmndsize, stdin) == -1 &&
 			!feof(stdin)	) OHNO;
 	// Now, lets divide the input into tokens,
 	// putting the first one in tokens[0], and
 	// use a loop for the remaining ones.
-	token = strtok(input, DELIMITERS);	// First token
-	if (!token) {	// Nothing was typed
-		if (tokens[0]) {
-			free(tokens[0]);
-			tokens[0] = NULL;
-		}
-		return;
+	token = strtok(input, DELIMITERS);
+	if (tokens[0]) {
+		fflush(stdin);
+		free(tokens[0]);
+		fflush(stdin);
+		tokens[0] = NULL;
 	}
-	if (!tokens[0]) tokens[0] = smalloc(sizeof(char) * CMNDSIZE, WHERE);
+	if (!token) return;	// Nothing was typed
+	tokens[0] = smalloc(sizeof(char) * CMNDSIZE, WHERE);
 	strcpy(tokens[0], token);
 	int i = 1;
 	while (i < TOKENSNUM) {
