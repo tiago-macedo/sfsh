@@ -13,7 +13,7 @@ int main(int argc, char* argv[], char* envp[]) {
 	while(1) {
 		printf("sfsh | %s >> ", cwd); // Escreve o prompt
 		get_command();
-		if (!strcmp(tokens[0], "\n")) continue;
+		if (!tokens[0]) continue;
 		// COMANDOS BUILTINS
 		if (!strcmp(tokens[0], "exit")) break;
 		else if (!strcmp(tokens[0], "del")) del_proc(atoi(tokens[1]));

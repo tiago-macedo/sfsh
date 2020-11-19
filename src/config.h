@@ -11,6 +11,6 @@
 #define TOKENSNUM 64	// Número máximo de tokens (comando + argumentos)
 #define PROCSNUM 64		// Número máximo de processos
 #define PROMPT "sfsh >> "
-#define DELIMITERS " \n"
+#define DELIMITERS " \t\n"
 
 #endif	// CONFIG_H

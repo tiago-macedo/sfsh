@@ -15,7 +15,8 @@
 - [ ] Signal handling
 
 ## Known Bugs
-- [ ] Segfault on empty input
+- [x] Segfault on empty input
+- [ ] Segfult on unknown input
 
 ## Sure Would Be Nice To Have These
 - [ ] Transform has_proc() (returns 0 or 1) into proc_index() (returns index of process, -1 if process not there)
