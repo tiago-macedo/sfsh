@@ -74,12 +74,15 @@ void sh_run() {
 	if ((pid = fork()) != 0) { // Pai
 		add_proc(pid, tokens[0]);
 		if (fore) {
-			if (fore_cycle(pid)) del_proc(pid);
+			fore_cycle(pid);
+			del_proc(pid);
 		}
 		else kill(pid, SIGTSTP);
 	}
 	else { // Filho
-		execve(tokens[0], tokens, environ);
+		if (execve(tokens[0], tokens, environ)) {
+			printf("Program not found.\n");
+		}
 		exit(errno);
 	}
 }

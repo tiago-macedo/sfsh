@@ -1,0 +1,3 @@
+Parent process deletes child from process list every time it exits, regardless of exit code.
+
+I still have no idea what is causing the segfault, but it happens even after running identified programs (like /bin/ls).
