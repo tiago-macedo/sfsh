@@ -1,49 +1,19 @@
 #include "command.h"
 
 /**
- * @brief	Comando builtin para mudar de diretório
+ * @brief	Builtin command to change working directory
  * 
- * @details	Local para onde deve-se desviar encontra-se
- *			em tokens[1].
+ * @details	`tokens[1]` contains path where we want to go
  */
 void sh_cd() {
-	if (!strcmp(tokens[1], ".")) return; // Nada acontece
-
-	else if (!strcmp(tokens[1], "..")) { // Vamos subir!
-		/*
-			Precisamos de um loop que crie um path
-			igual ao cwd atual, tirando o último diretório.
-			Para isso, vamos usar strtok() para dividir o
-			atual cwd em pedaços e colocá-los em temp_path.
-		*/
-		char * temp_path = smalloc(CMNDSIZE * sizeof(char), WHERE);
-		temp_path[0] = '\0';
-		strcat(temp_path, "/");
-		char * token = strtok(cwd, "/");
-		if (!token) return; // Usuário já está na raiz
-		char * old_token = token;
-		while ( (token = strtok(NULL, "/")) ) {
-			strcat(temp_path, old_token);
-			strcat(temp_path, "/");
-			old_token = token;
-		}
-		if (chdir(temp_path) != 0) {
-			perror("Erro subindo p diretório:");
-			exit(errno);
-		}
-		free(cwd);
-		cwd = getcwd(NULL, 0);
-	}
-	else if (tokens[1][0] == '/') {
-		if(chdir(tokens[1]) != 0) perror("Falha ao mudar de diretório:");
-		free(cwd);
-		cwd = getcwd(NULL, 0);
-	}
+	if(chdir(tokens[1]) != 0) perror("Failed to change directory:");
+	free(cwd);
+	cwd = getcwd(NULL, 0);
 }
 
 /**
- * @brief	Comando builtin para imprimir uma lista dos processos
- *			sendo executados por filhos da shell
+ * @brief	Builtin command to print a list of processes being
+ *			executed by the shell's children
  * 
  */
 void sh_jobs() {
@@ -59,28 +29,28 @@ void sh_jobs() {
 }
 
 /**
- * @brief	Executa programa em foreground
+ * @brief	Runs a program
  * 
  */
 void sh_run() {
 	int pid;
 	int fore = 1;
 	int i = last_token();
-	if (!strcmp(tokens[i], "&")) { // Ultimo token é &: background!
+	if (!strcmp(tokens[i], "&")) {	// last token is '&': backround the program
 		fore = 0;
-		free(tokens[i]); // Retirar &
-		tokens[i] = NULL; // dos argumentos.
+		free(tokens[i]);	// remove the '&'
+		tokens[i] = NULL;	// from the list of tokens
 	}
-	if ((pid = fork()) != 0) { // Pai
-		add_proc(pid, tokens[0]);
+	if ((pid = fork()) != 0) {		// we're the parent process
+		add_proc(pid, tokens[0]);	// add program being run by child to process list
 		if (fore) {
 			fore_cycle(pid);
 			del_proc(pid);
 		}
 		else kill(pid, SIGTSTP);
 	}
-	else { // Filho
-		if (execve(tokens[0], tokens, environ)) {
+	else {				// we're at the child process
+		if (execve(tokens[0], tokens, environ)) {	//TODO: use execvp() instead
 			printf("Program not found.\n");
 		}
 		exit(errno);
@@ -88,41 +58,41 @@ void sh_run() {
 }
 
 /**
- * @brief	Fica esperando o filho
+ * @brief	Waits for child process
  * 
- * @details	Retorna 1 se o processo terminou, 0 se só está parado.
+ * @details	Returns 1 if process is finished, 0 if it's stalled.
  *
- * @par pid	PID do processo que deve estar no foreground
+ * @par pid	PID of foreground process
  */
 int fore_cycle(int pid) {
 	if (!has_proc(pid)) return -2;
 	int status;
-	signal(SIGINT, sig_child); // passar sinal ao filho
+	signal(SIGINT, sig_child);	// signal child
 	signal(SIGTERM, sig_child);
 	signal(SIGTSTP, stop_child);
 	waitpid(pid, &status, WUNTRACED);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGTSTP, SIG_DFL);
-	if (WIFEXITED(status)) { // filho deu exit
+	if (WIFEXITED(status)) {		// child exited
 		if (WEXITSTATUS(status) != 0) printf("[%d]\n", WEXITSTATUS(status));
 		return 1;
 	}
-	else if (WIFSTOPPED(status)) { // filho foi parado
-		printf("processo %d (%s) parado.\n", pid, tokens[0]);
+	else if (WIFSTOPPED(status)) {	// child stopped
+		printf("process %d (%s) stopped.\n", pid, tokens[0]);
 		return 0;
 	}
-	else if (WIFSIGNALED(status)) { // filho foi sinalizado
-		printf("processo %d (%s) terminou devido a sinal %d.\n", pid, tokens[0], WSTOPSIG(status));
+	else if (WIFSIGNALED(status)) {	// child was signaled
+		printf("process %d (%s) has ended due to signal %d.\n", pid, tokens[0], WSTOPSIG(status));
 		return 1;
 	}
 	else return -1;
 }
 
 /**
- * @brief Envia sinal pro ultimo filho (foreground)
+ * @brief Signals last child process (foreground)
  * 
- * @param sig Sinal a ser enviado
+ * @param sig Signal to be sent
  */
 void sig_child(int sig) {
 	int status;
@@ -133,9 +103,9 @@ void sig_child(int sig) {
 }
 
 /**
- * @brief Para o ultimo filho (foreground)
+ * @brief Stops last child process (foreground)
  * 
- * @param sig Sinal a ser enviado
+ * @param sig Signal to be sent
  */
 void stop_child(int sig) {
 	signal(SIGTSTP, SIG_DFL);
@@ -143,7 +113,7 @@ void stop_child(int sig) {
 }
 
 /**
- * @brief	Executa programa em background
+ * @brief	Runs program in the foreground
  * 
  */
 void sh_fg() {
@@ -155,7 +125,7 @@ void sh_fg() {
 }
 
 /**
- * @brief	Executa programa em background
+ * @brief	Runs program in the background
  * 
  */
 void sh_bg() {
