@@ -16,7 +16,7 @@
 
 ## Known Bugs
 - [x] Segfault on empty input
-- [ ] Segfult on unknown input
+- [ ] Segfult after program execution.
 
 ## Sure Would Be Nice To Have These
 - [ ] Transform has_proc() (returns 0 or 1) into proc_index() (returns index of process, -1 if process not there)
